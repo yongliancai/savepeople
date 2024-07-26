@@ -37,6 +37,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            color: black;
         }
         .base#home { bottom: 10px; left: 50%; transform: translateX(-50%); }
         .base#first { bottom: 50%; right: 10px; transform: translateY(50%); }
@@ -67,6 +68,7 @@
             margin: 10px;
             padding: 10px;
             font-size: 16px;
+            color: black;
         }
         .control-panel input, .control-panel select {
             border: 1px solid #ddd;
@@ -91,6 +93,29 @@
             padding: 2px 5px;
             border: 1px solid black;
             border-radius: 3px;
+            color: black;
+        }
+        .scoreboard {
+            margin-top: 20px;
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            color: black;
+        }
+        .scoreboard table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .scoreboard th, .scoreboard td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            color: black;
+        }
+        .scoreboard th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
@@ -120,6 +145,37 @@
         <div id="player" class="player">
             <div id="playerName" class="player-name"></div>
         </div>
+    </div>
+    <div class="scoreboard">
+        <table id="scoreTable">
+            <tr>
+                <th>成全日期</th>
+                <th>成全內容</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+                <th>8</th>
+                <th>9</th>
+            </tr>
+            <tr id="scoreRow">
+                <td><input type="date" id="date"></td>
+                <td><input type="text" id="content"></td>
+                <td id="score1"></td>
+                <td id="score2"></td>
+                <td id="score3"></td>
+                <td id="score4"></td>
+                <td id="score5"></td>
+                <td id="score6"></td>
+                <td id="score7"></td>
+                <td id="score8"></td>
+                <td id="score9"></td>
+            </tr>
+        </table>
+        <button onclick="saveScore()">儲存</button>
     </div>
     <script>
         let playerPosition = 0;
@@ -181,6 +237,45 @@
             const selectedOption = this.options[this.selectedIndex];
             setPlayerName(selectedOption.value);
         });
+
+        function saveScore() {
+            const date = document.getElementById("date").value;
+            const content = document.getElementById("content").value;
+            const playerName = document.getElementById("playerSelect").value;
+
+            if (playerName) {
+                const times = document.getElementById("scoreRow").querySelectorAll("td:not(:first-child):not(:nth-child(2))");
+                let filledTimes = 0;
+
+                times.forEach((cell, index) => {
+                    if (cell.innerText.trim() === "" && filledTimes === 0) {
+                        cell.innerText = `${date}`;
+                        filledTimes = index + 1;
+
+                        // Add new row for content
+                        const newRow = document.createElement('tr');
+                        for (let i = 0; i < 11; i++) {
+                            const newCell = document.createElement('td');
+                            if (i === 0) newCell.innerText = date;
+                            if (i === 1) newCell.innerText = content;
+                            if (i === index + 2) newCell.innerText = content;
+                            newRow.appendChild(newCell);
+                        }
+                        document.getElementById('scoreTable').appendChild(newRow);
+                    }
+                });
+
+                if (filledTimes === 3) {
+                    alert("可以成全求道囉");
+                } else if (filledTimes === 6) {
+                    alert("可以成全法會囉");
+                } else if (filledTimes === 9) {
+                    alert("可以成全研究班囉");
+                }
+            } else {
+                alert("請先選擇成全對象");
+            }
+        }
 
         // Initial player position
         resetPlayerPosition();
