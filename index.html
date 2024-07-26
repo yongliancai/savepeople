@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>統計人才</title>
+    <style>
+        .baseball-field {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background-color: green;
+            border: 2px solid #000;
+            margin: 20px auto;
+        }
+        .base {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: yellow;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .base#home { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .base#first { bottom: 50%; right: 0; transform: translateY(50%); }
+        .base#second { top: 0; left: 50%; transform: translateX(-50%); }
+        .base#third { bottom: 50%; left: 0; transform: translateY(50%); }
+        .player {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            transition: all 0.5s;
+        }
+        .control-panel {
+            text-align: center;
+            margin: 20px;
+        }
+        .player-name {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 2px 5px;
+            border: 1px solid black;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel">
+        <label for="newPlayer">新增成全對象：</label>
+        <input type="text" id="newPlayer" placeholder="輸入名稱">
+        <button onclick="addPlayer()">新增</button>
+        <br><br>
+        <label for="playerSelect">選擇成全對象：</label>
+        <select id="playerSelect"></select>
+        <br><br>
+        <label for="statusSelect">狀況：</label>
+        <select id="statusSelect">
+            <option value="activity">參加活動</option>
+            <option value="seek">求道</option>
+            <option value="ceremony">開法會</option>
+            <option value="research">上研究班</option>
+        </select>
+        <button onclick="advancePlayer()">進壘</button>
+    </div>
+    <div class="baseball-field">
+        <div id="home" class="base">本壘</div>
+        <div id="first" class="base">一壘</div>
+        <div id="second" class="base">二壘</div>
+        <div id="third" class="base">三壘</div>
+        <div id="player" class="player">
+            <div id="playerName" class="player-name"></div>
+        </div>
+    </div>
+    <script>
+        let playerPosition = -1;
+        const bases = ["home", "first", "second", "third"];
+        const player = document.getElementById("player");
+        const playerNameDisplay = document.getElementById("playerName");
+
+        function addPlayer() {
+            const playerName = document.getElementById("newPlayer").value;
+            if (playerName) {
+                const option = document.createElement("option");
+                option.text = playerName;
+                option.value = playerName;
+                document.getElementById("playerSelect").add(option);
+                document.getElementById("newPlayer").value = "";
+                setPlayerName(playerName);
+            }
+        }
+
+        function setPlayerName(name) {
+            playerNameDisplay.textContent = name;
+            resetPlayerPosition();
+        }
+
+        function advancePlayer() {
+            const status = document.getElementById("statusSelect").value;
+            switch (status) {
+                case "activity":
+                    playerPosition = 1;
+                    break;
+                case "seek":
+                    playerPosition = 2;
+                    break;
+                case "ceremony":
+                    playerPosition = 3;
+                    break;
+                case "research":
+                    playerPosition = 0;
+                    break;
+            }
+            movePlayer();
+        }
+
+        function resetPlayerPosition() {
+            playerPosition = 0;
+            movePlayer();
+        }
+
+        function movePlayer() {
+            const base = document.getElementById(bases[playerPosition]);
+            const rect = base.getBoundingClientRect();
+            const fieldRect = document.querySelector(".baseball-field").getBoundingClientRect();
+            player.style.top = (rect.top - fieldRect.top) + "px";
+            player.style.left = (rect.left - fieldRect.left) + "px";
+            player.style.transform = base.style.transform;
+        }
+
+        document.getElementById("playerSelect").addEventListener("change", function() {
+            const selectedOption = this.options[this.selectedIndex];
+            setPlayerName(selectedOption.value);
+        });
+    </script>
+</body>
+</html>
